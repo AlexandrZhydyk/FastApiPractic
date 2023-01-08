@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from pydantic import BaseModel, EmailStr, validator, constr
 
@@ -11,6 +12,7 @@ class UserBase(BaseModel):
 
 
 class UserOut(UserBase):
+    id: int
     created_at: datetime
     updated_at: datetime
 
@@ -21,8 +23,14 @@ class UserOut(UserBase):
         }
 
 
-class UserUpdate(UserBase):
-    updated_at: datetime
+class UserUpdate(BaseModel):
+    id: Optional[int] = None
+    email: Optional[EmailStr] = None
+    name: Optional[str] = None
+    is_company: Optional[bool] = None
+    is_active: Optional[bool] = None
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
 
     class Config:
         orm_mode = True

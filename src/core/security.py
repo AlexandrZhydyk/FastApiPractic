@@ -71,6 +71,7 @@ def create_refresh_token(data: dict) -> str:
 async def get_current_user(security_scopes: SecurityScopes, token: str = Depends(oauth2_scheme),
                            db: AsyncSession = Depends(get_session),
                            ):
+    print(security_scopes.scopes)
     if security_scopes.scopes:
         authenticate_value = f'Bearer scope="{security_scopes.scope_str}"'
     else:

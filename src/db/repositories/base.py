@@ -49,9 +49,8 @@ class BaseService(Generic[ModelType, CreateSchemaType]):
         return instance
 
     async def update(self, pk: int, obj: ModelType, db: AsyncSession) -> ModelType:
-        obj_dict = obj.dict()
-        del obj_dict['created_at']
-        obj_dict['updated_at'] = obj_dict['updated_at'] = datetime.utcnow()
+        obj_dict = obj.dict(exclude_none=True)
+        obj_dict['updated_at'] = datetime.utcnow()
         query = update(self.model).where(self.model.id == pk).values(**obj_dict).returning(self.model)
         instance = await db.execute(query)
         try:

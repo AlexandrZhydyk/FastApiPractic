@@ -1,5 +1,5 @@
 from datetime import datetime
-from fastapi import status, Depends
+from fastapi import status, Depends, Body
 from sqlalchemy import update
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -35,33 +35,15 @@ class UsersService(BaseService[UserOut, UserCreate]):
             raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="This email is already registered")
         return db_obj
 
-    async def update(self, pk: int, obj: UserCreate, db: AsyncSession, user: UserOut) -> UserOut:
-        data_user = await self.get_one(pk)
+    async def update(self, pk: int, obj: UserUpdate, db: AsyncSession, user: UserOut) -> UserOut:
+        data_user = await self.get_one(pk, db)
         if data_user.id == user.id or user.is_superuser:
             return await super().update(pk, obj, db)
         raise HTTPException(status_code=HTTP_401_UNAUTHORIZED, detail="Unauthorized for this action")
 
-    # async def update(self, pk: int, obj: UserOut) -> UserUpdate:
-    #     obj_dict = obj.dict()
-    #     obj_dict['updated_at'] = datetime.utcnow()
-    #     del obj_dict['created_at']
-    #     query = update(self.model).where(self.model.id == pk)\
-    #         .values(**obj_dict)\
-    #         .execution_options(synchronize_session="fetch")
-    #     await db.execute(query)
-    #     try:
-    #         await db.commit()
-    #     except Exception:
-    #         await db.rollback()
-    #         raise
-    #     return obj_dict
-
 
 def get_users_service() -> UsersService:
     return UsersService()
-
-
-
 
 # import datetime
 # from typing import List, Optional
