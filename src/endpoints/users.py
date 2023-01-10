@@ -46,7 +46,7 @@ async def get_one(pk: int, user_service: UsersService = Depends(get_users_servic
 
 
 @router_users.put("/{pk}", response_model=UserUpdate)
-async def update_user(obj: UserOut, pk: int, user_service: UsersService = Depends(get_users_service),
+async def update_user(obj: UserUpdate, pk: int, user_service: UsersService = Depends(get_users_service),
                       user: UserInDB = Depends(check_superuser_credentials),
                       db: AsyncSession = Depends(get_session)) -> UserUpdate:
     return await user_service.update(pk, obj, db, user)

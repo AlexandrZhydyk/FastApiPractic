@@ -1,19 +1,16 @@
 from fastapi import HTTPException, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-# from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 from starlette.status import HTTP_401_UNAUTHORIZED
 
 from src.core.security import get_current_active_user
-from src.db.base import init_models
-# from src.db.base import db
 from src.schemas.user import UserOut
 from src.db.repositories.base import BaseService
-from src.schemas.job import JobCreate, JobOut
+from src.schemas.job import JobCreate, JobOut, JobUpdate
 from src.db.models.jobs import Job
 
 
-class JobsService(BaseService[JobCreate, JobOut]):
+class JobsService(BaseService[JobCreate, JobOut, JobUpdate]):
     def __init__(self):
         super().__init__(Job)
 

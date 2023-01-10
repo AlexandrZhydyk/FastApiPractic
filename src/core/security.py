@@ -1,7 +1,7 @@
 from fastapi import Depends, HTTPException, Security
 from fastapi.security import OAuth2PasswordBearer, SecurityScopes
 from jose import jwt, JWTError
-from pydantic import ValidationError
+from pydantic import ValidationError, EmailStr
 from sqlalchemy.ext.asyncio import AsyncSession
 # from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
@@ -36,7 +36,14 @@ def verify_password(password: str, hashed_password: str) -> bool:
     return pwd_context.verify(password, hashed_password)
 
 
-async def get_user(database, email: str) -> UserInDB:
+async def get_user(database, pk: int) -> UserInDB:
+    query = select(User).where(User.id == pk)
+    db_obj = await database.execute(query)
+    instance = db_obj.scalar()
+    return instance
+
+
+async def get_user_by_email(database, email: str) -> UserInDB:
     query = select(User).where(User.email == email)
     db_obj = await database.execute(query)
     instance = db_obj.scalar()
@@ -44,7 +51,7 @@ async def get_user(database, email: str) -> UserInDB:
 
 
 async def authenticate_user(database, email: str, password: str):
-    user = await get_user(database, email)
+    user = await get_user_by_email(database, email)
     if not user:
         return False
     if not verify_password(password, user.hashed_password):
@@ -71,7 +78,6 @@ def create_refresh_token(data: dict) -> str:
 async def get_current_user(security_scopes: SecurityScopes, token: str = Depends(oauth2_scheme),
                            db: AsyncSession = Depends(get_session),
                            ):
-    print(security_scopes.scopes)
     if security_scopes.scopes:
         authenticate_value = f'Bearer scope="{security_scopes.scope_str}"'
     else:
@@ -83,15 +89,21 @@ async def get_current_user(security_scopes: SecurityScopes, token: str = Depends
     )
     try:
         payload = jwt.decode(token, Config.SECRET_KEY, algorithms=[Config.ALGORITHM])
-        email: str = payload.get("sub")
+        print(payload)
+        # pk = payload.get("sub")
+        email: EmailStr = payload.get("sub")
         if email is None:
             raise credentials_exception
         token_scopes = payload.get("scopes", [])
+        print(token_scopes)
         token_data = TokenRead(scopes=token_scopes, email=email)
+        print(token_data)
     except (JWTError, ValidationError):
+        print("10")
         raise credentials_exception
-    user = await get_user(db, email=token_data.email)
+    user = await get_user_by_email(db, email=token_data.email)
     if user is None:
+        print("20")
         raise credentials_exception
     for scope in security_scopes.scopes:
         if scope not in token_data.scopes:

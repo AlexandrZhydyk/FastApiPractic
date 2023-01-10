@@ -7,12 +7,12 @@ class Token(BaseModel):
     access_token: str
     refresh_token: str
     token_type: str
-    # user: IUserRead
 
 
 class TokenRead(BaseModel):
-    email: EmailStr
     scopes: List[str] = []
+    email: EmailStr
+    # id: int
 
 
 class RefreshToken(BaseModel):

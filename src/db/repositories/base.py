@@ -17,7 +17,7 @@ CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
 UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
 
 
-class BaseService(Generic[ModelType, CreateSchemaType]):
+class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
 
     def __init__(self, model: Type[ModelType]):
         self.model = model
@@ -48,7 +48,7 @@ class BaseService(Generic[ModelType, CreateSchemaType]):
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="There is no object")
         return instance
 
-    async def update(self, pk: int, obj: ModelType, db: AsyncSession) -> ModelType:
+    async def update(self, pk: int, obj: UpdateSchemaType, db: AsyncSession) -> UpdateSchemaType:
         obj_dict = obj.dict(exclude_none=True)
         obj_dict['updated_at'] = datetime.utcnow()
         query = update(self.model).where(self.model.id == pk).values(**obj_dict).returning(self.model)

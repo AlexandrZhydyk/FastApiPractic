@@ -22,8 +22,8 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 from src.db.base import Base # NOQA
-from src.db.models.users import User # NOQA
 from src.db.models.jobs import Job # NOQA
+from src.db.models.users import User # NOQA
 target_metadata = Base.metadata
 # target_metadata = None
 

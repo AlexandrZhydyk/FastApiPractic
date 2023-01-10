@@ -17,6 +17,6 @@ class User(Base):
     is_superuser = Column(Boolean, default=False)
     updated_at = Column(DateTime, default=datetime.utcnow)
     created_at = Column(DateTime, default=datetime.utcnow)
-
-    jobs = relationship("Job", back_populates="user")
+    jobs = relationship("Job", backref="users.id")
+    # jobs = relationship("jobs.Job", back_populates="user")
 

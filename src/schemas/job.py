@@ -19,3 +19,13 @@ class JobOut(JobCreate):
         json_encoders = {
             datetime: lambda date: date.isoformat()[:-3] + 'Z'
         }
+
+
+class JobUpdate(JobCreate):
+    updated_at: datetime
+
+    class Config:
+        orm_mode = True
+        json_encoders = {
+            datetime: lambda date: date.isoformat()[:-3] + 'Z'
+        }

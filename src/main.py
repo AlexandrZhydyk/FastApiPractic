@@ -9,7 +9,7 @@ from src.core.security import authenticate_user, create_access_token, create_ref
 from src.schemas.token import Token
 from src.endpoints.jobs import router_jobs
 from src.endpoints.users import router_users
-from src.db.base import init_models, get_session
+from src.db.base import init_tables, get_session
 
 
 def get_application() -> FastAPI:
@@ -18,7 +18,7 @@ def get_application() -> FastAPI:
 
     @app.on_event("startup")
     async def startup():
-        await init_models()
+        await init_tables()
 
     @app.get("/")
     async def default():

@@ -24,11 +24,9 @@ class UserOut(UserBase):
 
 
 class UserUpdate(BaseModel):
-    id: Optional[int] = None
     email: Optional[EmailStr] = None
     name: Optional[str] = None
     is_company: Optional[bool] = None
-    is_active: Optional[bool] = None
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
 
